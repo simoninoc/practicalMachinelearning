@@ -1,0 +1,17 @@
+{
+    "contents" : "---\ntitle: \"Week 1 Lesson Note\"\nauthor: \"Zhuoru Lin\"\ndate: \"Monday, April 13, 2015\"\noutput: html_document\n---\n\n#Relative importantace of step\n## Summary: Question > data > features > algorithm\n\n#In sample and Out of sample\nThe error rate in sample can be larger when applying some other sample.\n\n#Types of erros\n##Terms Definition\nSensitivity: P(+|T)\nSpecificity: P(-|F)\nPositive Predictive Value: P(T|+)\nNegative Predictive Value: P(F|-)\nAccuracy: P(correct predictions)\n\n#ROC curves\n##ROC stands for \"Receiver Operating Characteristics \"\n\n##Cut-offs\nWhen predict binary outcomes, the prediction is always quantitative. For example, the probability of something happening. Hence different Cut-offs shows different results.\n\n##Def of ROC curve\nA curve that shows the cut-offs on P(TP) vs P(FP)\n\n##Measure of quality of prediction\nUsing the AUC(Area under the curve) of ROC to measure how good a prediction is.\n\n*When AUC = 0.5, it is the same as ramdomly guessing.\n*When AUC = 0.8, it is considered to be a \"Good prediction\".\n\n#Cross Validation\n##Ramdom sampling\n*Must be done without replacement\n**If replace, it is boostraping, which underestimates the error.\n\n##K-fold\n*Large size K: less bias, more variance\n*Small size K: more bias, less variance\n\n",
+    "created" : 1428950515313.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1208581010",
+    "id" : "1482784D",
+    "lastKnownWriteTime" : 1429125167,
+    "path" : "~/RFiles/Practical Machine Learning/Week1_Note.Rmd",
+    "project_path" : "Week1_Note.Rmd",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_markdown"
+}

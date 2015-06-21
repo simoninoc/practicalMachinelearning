@@ -1,0 +1,39 @@
+---
+title: "Week 3 Note"
+author: "Zhuoru Lin"
+date: "Wednesday, June 17, 2015"
+output: html_document
+---
+
+#Predicting with tree
+##Algorithm
+Split between a variables that seperates most untile each group have enough purity.
+##Measurement of purity
+*Misclassification Error: 0.5 = no purity, 0 = perfect purity
+*Gini Index: 0.5 = no purity, 0 = perfect purity
+*Deviance/Imformation Gain: 0 = perfect purity, 1 = no purity
+
+##Example: Iris data
+```{r}
+data(iris)
+library(ggplot2)
+library(caret)
+names(iris)
+table(iris$Species)
+inTrain = createDataPartition(y = iris$Species, p =0.7,list = F)
+training = iris[inTrain,]
+test = iris[-inTrain,]
+```
+
+Predicting with trees in R
+```{r}
+modFit = train(Species~.,method = "rpart", data = training)
+modFit$finalModel
+plot(modFit$finalModel,uniform = T,main = "Classification Tree")
+text(modFit$finalModel,use.n = T, all = T, cex= 1)#use.n print prediction outcome cex control font size
+
+#####A better plot########
+library(rattle)
+```
+
+

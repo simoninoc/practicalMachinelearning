@@ -1,0 +1,45 @@
+---
+title: "Week 1 Lesson Note"
+author: "Zhuoru Lin"
+date: "Monday, April 13, 2015"
+output: html_document
+---
+
+#Relative importantace of step
+## Summary: Question > data > features > algorithm
+
+#In sample and Out of sample
+The error rate in sample can be larger when applying some other sample.
+
+#Types of erros
+##Terms Definition
+Sensitivity: P(+|T)
+Specificity: P(-|F)
+Positive Predictive Value: P(T|+)
+Negative Predictive Value: P(F|-)
+Accuracy: P(correct predictions)
+
+#ROC curves
+##ROC stands for "Receiver Operating Characteristics "
+
+##Cut-offs
+When predict binary outcomes, the prediction is always quantitative. For example, the probability of something happening. Hence different Cut-offs shows different results.
+
+##Def of ROC curve
+A curve that shows the cut-offs on P(TP) vs P(FP)
+
+##Measure of quality of prediction
+Using the AUC(Area under the curve) of ROC to measure how good a prediction is.
+
+*When AUC = 0.5, it is the same as ramdomly guessing.
+*When AUC = 0.8, it is considered to be a "Good prediction".
+
+#Cross Validation
+##Ramdom sampling
+*Must be done without replacement
+**If replace, it is boostraping, which underestimates the error.
+
+##K-fold
+*Large size K: less bias, more variance
+*Small size K: more bias, less variance
+

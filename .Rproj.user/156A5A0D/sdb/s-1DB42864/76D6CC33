@@ -1,0 +1,17 @@
+{
+    "contents" : "---\ntitle: \"Week 3 Note\"\nauthor: \"Zhuoru Lin\"\ndate: \"Wednesday, June 17, 2015\"\noutput: html_document\n---\n\n#Predicting with tree\n##Algorithm\nSplit between a variables that seperates most untile each group have enough purity.\n##Measurement of purity\n*Misclassification Error: 0.5 = no purity, 0 = perfect purity\n*Gini Index: 0.5 = no purity, 0 = perfect purity\n*Deviance/Imformation Gain: 0 = perfect purity, 1 = no purity\n\n##Example: Iris data\n```{r}\ndata(iris)\nlibrary(ggplot2)\nlibrary(caret)\nnames(iris)\ntable(iris$Species)\ninTrain = createDataPartition(y = iris$Species, p =0.7,list = F)\ntraining = iris[inTrain,]\ntest = iris[-inTrain,]\n```\n\nPredicting with trees in R\n```{r}\nmodFit = train(Species~.,method = \"rpart\", data = training)\nmodFit$finalModel\nplot(modFit$finalModel,uniform = T,main = \"Classification Tree\")\ntext(modFit$finalModel,use.n = T, all = T, cex= 1)#use.n print prediction outcome cex control font size\n\n#####A better plot########\nlibrary(rattle)\n```\n\n\n",
+    "created" : 1434587447062.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "165258131",
+    "id" : "76D6CC33",
+    "lastKnownWriteTime" : 1434734584,
+    "path" : "~/RFiles/Practical Machine Learning/Week3_Note.Rmd",
+    "project_path" : "Week3_Note.Rmd",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_markdown"
+}

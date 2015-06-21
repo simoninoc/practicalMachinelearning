@@ -1,0 +1,17 @@
+{
+    "contents" : "Week2 Quiz\n#1\nlibrary(AppliedPredictiveModeling)\nlibrary(caret)\ndata(AlzheimerDisease)\n\n#2\ndata(concrete)\nlibrary(caret)\nset.seed(975)\ninTrain = createDataPartition(mixtures$CompressiveStrength, p = 3/4)[[1]]\ntraining = mixtures[ inTrain,]\ntesting = mixtures[-inTrain,]\n\n#Plot\nfeaturePlot(x = mixtures[,-7], y = mixtures[,7],plot = \"pairs\")\n",
+    "created" : 1429666997776.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1528669648",
+    "id" : "FD54BFE5",
+    "lastKnownWriteTime" : 1429667654,
+    "path" : "~/RFiles/Practical Machine Learning/Week2_quiz.R",
+    "project_path" : "Week2_quiz.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

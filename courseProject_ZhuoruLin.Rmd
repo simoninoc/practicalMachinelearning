@@ -1,0 +1,125 @@
+---
+title: "Practical machine learning course project"
+author: "Zhuoru Lin"
+date: "Friday, June 19, 2015"
+output: html_document
+---
+# Data source and background
+
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset). 
+
+# Goal
+
+The goal of this project is to predict the manner in which they did the exercise. This is the "classe" variable in the training set. 
+
+# Data and predictors selection
+
+The training data are already provided by the project instruction page. But the "testing" set provided does not have the outcomes to check with. Hence I partitioned the training data set into 60% training data and 40% testing data:
+
+```{r}
+library(caret)
+alltrain = read.csv("./project/pml-training.csv")
+inTrain = createDataPartition(y = alltrain$classe,p = 0.6,list = F)
+training = alltrain[inTrain,]
+testing = alltrain[-inTrain,]
+```
+
+
+## Counting NAs
+Some variables my have large amount of NAs and have no predicton power. 
+```{r}
+NAmark = apply(X = training,MARGIN = 2,FUN = is.na)
+NAperCol = colSums(NAmark)
+``` 
+
+
+It shows that these predictors have either 0 or 19216 NAs out of 19622 observation. I decide to choose all the predictors with 0 NAs.
+
+```{r}
+valid_predictor_position = which(NAperCol==0)
+predictors_subset = training[valid_predictor_position]
+```
+
+## Unneccesary predictors
+Although do not have enough understanding of each variable, but I insist that row number and user_name should not predict exercise manner. Also, date and time and window numbers does not seems to affect exercise either. 
+Hence the first seven variables from the subset I created above are deleted:
+```{r}
+predictors_subset = predictors_subset[-(1:7)]
+```
+
+Also delete the outcome "classe" from predictors subset.
+```{r}
+predictors_subset = predictors_subset[-86]
+```
+
+## No values rows 
+There exists some colums that a lot of rows do not have values yet they are not NAs. For example:
+```{r,warning=FALSE}
+head(predictors_subset[5])
+```
+
+In order to delete these columns, I will first convert all columns to numeric. Those observations without a value will be assign NAs. Then delete these columns from the subset.
+```{r,warning=FALSE}
+predictors_subset = apply(predictors_subset,2,as.numeric)#Convert to numeric vector
+NACheck = apply(predictors_subset,2,is.na) #Return logic indicators of each observation
+NAperCol = colSums(NACheck)#Count NAs of each columns
+valid_position = which(NAperCol==0)# Mark down valid columns that without NAs.
+predictors_subset = as.data.frame(predictors_subset)
+predictors_subset = predictors_subset[valid_position]
+```
+
+
+Finally, I choose 52 out of 159 predictors.
+
+# Model
+Because "classe" is a factor of 5 levels. Principal component analysis with general linear regression won't work. I decide to use decision tree. Ramdom forest method should be more accurate but consider the processing time of 52 predictors I should try more efficient decisiont tree model first.
+
+## Decision tree model
+
+```{r,cache=TRUE}
+treeModel = train(training$classe~.,data = predictors_subset,method = "rpart")
+treeModel$finalModel
+library(rattle)
+fancyRpartPlot(treeModel$finalModel)
+```
+
+The decision tree model seems to be very good at predicting A and E but are not very accurate at B and C. However in order to access the model we need to do cross-validation on testing set. My expectation for the accuracy in testing set is low. Let's first have a look at how well this model did in training set.
+```{r}
+confusionMatrix(data = training$classe, reference = predict(treeModel,predictors_subset))
+```
+
+The accuracy is only about 50%. I expect the performance is closed when the same model is applied to testing set.
+```{r}
+confusionMatrix(data = testing$classe, reference = predict(treeModel,testing))
+```
+
+The accuracy drop to 49.4%. Which result in an expected out of sample error rate of around 50%. Hence I don't want to use decision tree to make my predictions.
+
+## Ramdom forest model
+```{r,cache=TRUE}
+forestModel = train(training$classe~.,data = predictors_subset,method = "rf",trControl = trainControl(method = "cv",number = 4))
+confusionMatrix(data = testing$classe,reference = predict(forestModel,testing))
+```
+
+The out of sample accuracy is up to 99%. Hence our best bet is to use ramdom fourest model to give predictions.
+
+
+
+# Submission
+I will just apply ramdom forest model to predict the 20 testing sample that coursera provide. And use the given function to export txt files to submit predictions homework.
+
+```{r}
+external_test = read.csv("./project/pml-testing.csv")
+predictions = predict(forestModel,external_test)
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+pml_write_files(predictions)
+```
+
+
+It ends up with 100% correct on 20 predictions.

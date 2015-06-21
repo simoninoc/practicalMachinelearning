@@ -1,0 +1,152 @@
+---
+title: "Week 2 Note"
+author: "Zhuoru Lin"
+date: "Wednesday, April 15, 2015"
+output: html_document
+---
+#The Caret Package
+
+##Data splitting (Spam data example)
+```{r, results='hide',message=FALSE}
+library(caret);
+library(kernlab);
+data(spam);
+inTrain = createDataPartition(y = spam$type, p = 0.75, list = FALSE, times = 1)
+```
+
+createDataPartition returns a vector of number indicating the positions of splitted sample.
+
+
+###createDataPartition(y, times = 1,p = 0.5,list = TRUE,groups = min(5, length(y)))
+
+y        
+a vector of outcomes. For createTimeSlices, these should be in chronological order.
+
+times	
+the number of partitions to create
+
+p	
+the percentage of data that goes to training
+
+list	
+logical - should the results be in a list (TRUE) or a matrix with the number of rows equal to floor(p * length(y)) and times columns.
+
+groups	
+for numeric y, the number of breaks in the quantiles 
+
+##Fit a model
+```{r}
+training = spam[inTrain,]#Define a trainning data set
+model = train(type~., data = training, method = "glm")
+```
+
+
+#Plotting Variables
+##Data: Predicting wage
+```{r}
+library(ggplot2)
+library(caret)
+library(ISLR)
+data(Wage)
+summary(Wage)
+```
+
+##Training set
+```{r}
+inTrain = createDataPartition(Wage$wage, p = 0.7, list = F)
+training = Wage[inTrain,]
+testing = Wage[-inTrain,]
+```
+
+
+##Feature Plot
+To get a feeling of corelations
+```{r}
+featurePlot(x = training[,c("age", "education","jobclass")], y = training$wage, plot = "pairs")
+```
+
+##Cut2 making factors from Hmisc
+```{r}
+library(Hmisc)
+cutWage = cut2(training$wage, g = 3)#g specify number of intervals to be cutted to
+class(cutWage) # cut2 returns only factor
+head(cutWage)
+p1 = qplot(cutWage, age , data = training, fill = cutWage, geom = c("boxplot"))
+```
+
+
+##Making Tables
+
+```{r}
+t1 = table(cutWage, training$jobclass) #table function can take one or more factors
+prop.table(x = t1, margin = 1) #Margin 1 refers to proportion of each rows, 2 refers to proportion of each columns
+```
+
+##Density plot in ggplot2
+```{r}
+qplot(wage, color = education, data = training, geom = "density")
+```
+
+
+#Preprocessing
+##Standardizing
+using the preProcess function in caret package.
+
+Example Data
+```{r}
+library(kernlab)
+data(spam)
+inTrain = createDataPartition(y = spam$type, p = 0.75, list = F)
+training = spam[inTrain,]
+testing = spam[-inTrain,]
+```
+
+preProcess(data, method = c("center","scale")) will return a trainsformation (a "preProcess" object) of standardizing. This transformation can be apply to all data with same variables using predict().
+
+```{r}
+standardize = preProcess(training[,-58], method = c("center", "scale"))
+capave = predict(standardize,training[,-58])$capitalAve
+```
+
+
+##standardizing argument in train()
+```{r}
+model = train(type~.,data = training, preProcess = c("center","scale"), method = "glm")
+model
+```
+
+##Box-Cox transformation
+using preProcess(data, method = c("boxcox"))
+Box-cox transformation is a continuous transformation that makes data looks more "normal". But it does not takes care of repeated values.
+
+##Impute Data
+Prediction algorithm always does not work if there are some NAs in the data set.
+We can assign values to these position using k-nearest-neighbour algorithm. 
+To do this just specify methoed = "knnImpute".
+
+###Example
+```{r}
+knn = preProcess(training[,-58],method = "knnImpute")
+```
+
+
+#Principal Components Analysis (PCA)
+PCA finds the linear combination of predictors that explains most variations of the data. Without knowing how to prove mathematically we simply learn how to do it with caret.
+
+##PreProcess using pca method
+```{r}
+pcaSpam = preProcess(x = spam[,-58], method = "pca",pcaComp = 2)
+spamPC = predict(pcaSpam, spam[,-58])
+qplot(spamPC[,1],spamPC[,2],color = type, data = spam)
+```
+
+We can see a clear seperation on data.
+
+##Prediction using regression
+```{r}
+
+```
+
+
+
+
